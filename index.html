@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Rule-persist by fr9ncisco</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Rule-persist</h1>
+      <h2 class="project-tagline"></h2>
+      <a href="https://github.com/fr9ncisco/rule-persist" class="btn">View on GitHub</a>
+      <a href="https://github.com/fr9ncisco/rule-persist/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/fr9ncisco/rule-persist/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="rule-persist" class="anchor" href="#rule-persist" aria-hidden="true"><span class="octicon octicon-link"></span></a>rule-persist</h1>
+
+<p>Drools "rules" persistence on DB as is without KieWorkbench</p>
+
+<h2>
+<a id="goals" class="anchor" href="#goals" aria-hidden="true"><span class="octicon octicon-link"></span></a>Goals</h2>
+
+<ul>
+<li>Avoid drools maven scheme dependencies at runtime</li>
+<li>Avoid KieWorkbench component</li>
+<li>Allow hot deployement without runtime automated update</li>
+<li>Use versioning information for sets of rules</li>
+<li>Avoid changing rule execution API schemes</li>
+</ul>
+
+<h2>
+<a id="context" class="anchor" href="#context" aria-hidden="true"><span class="octicon octicon-link"></span></a>Context</h2>
+
+<p>A Drools 6.xx Rule project is made of :</p>
+
+<ul>
+<li>a Pom.property file, containig GAV(groupid,artefactid, versionid ) information.</li>
+<li>a KieModule file :  A  description of components and their configuration that will be used at runtime.</li>
+<li>Rule artefact files : rules, decision tables, rule process flows, etc...</li>
+<li>dependencies to java models referenced in rules(no files)</li>
+</ul>
+
+<p>Common development usage of Drools is to produce an archive containing those files so that this archive can be used at runtime to execute rules contained in it.</p>
+
+<p>Drools uses Maven in its core for building and deployement scheme of rule archives:<br>
+Whenever a new ruleset archive is produced, it may be deployed on the local Maven repository of an Application server, in order to be used and eventually update application behavior.<br>
+Risk of a human error or misusage has been raised, and implies that the use of maven on a runtime server should be avoided and that a more secure and non automated solution unlike maven should be used instead, in order to update rules.<br>
+Although, the usage of drools for developement, deployement, usage and update should remain simple.</p>
+
+<h2>
+<a id="drools--mechanisms" class="anchor" href="#drools--mechanisms" aria-hidden="true"><span class="octicon octicon-link"></span></a>Drools  mechanisms</h2>
+
+<p>Drools since version 6.x uses a new set of APIs.<br>
+Maven has been placed in the core of the Rule Engine for its lifecycle(build, runtime, update) </p>
+
+<p>Maven style archives are :</p>
+
+<ul>
+<li>produced by the build process.</li>
+<li>used at runtime to load rule sets</li>
+<li>used ar runtime to update rule sets</li>
+</ul>
+
+<p>It is necessary to present core concepts, in order to show how they may be used without maven.</p>
+
+<p>Runtime behaviour of rule execution and acess is described through an XML file : kiemodule.xml.<br>
+In this xml file, some drools components are defined such as :</p>
+
+<ul>
+<li>KieContainer</li>
+<li>KieBase</li>
+<li>KieSession</li>
+</ul>
+
+<h2>
+<a id="1--kiecontainer" class="anchor" href="#1--kiecontainer" aria-hidden="true"><span class="octicon octicon-link"></span></a>1 : KieContainer</h2>
+
+<p>To model a set of rules, a KieContainer is used.
+at runtime and is configured with the help of kiemodule.xml file.</p>
+
+<p>Rules are not declared upfront in the file, they are declared throug groups</p>
+
+<p>A KieContainer contains a set of rules : any kind of rule artifacts, whether there are contained in one or many files.<br>
+A KieContainer supports versioning information : It holds versionning informations that are set like maven style.<br>
+A KieContainer can be updated at runtime with new rules though a special set of drools components.  </p>
+
+<p>A KieContainer can be updated from a JAR file, and the content of this JAR file must follow some contraints :   </p>
+
+<ul>
+<li>a kmodule.xml, describing the grouping of rules into packages, the access of rule groups through knowledge bases and sessions.</li>
+<li>Rules artifacts are contained into this file.</li>
+</ul>
+
+<h2>
+<a id="2--kiebase" class="anchor" href="#2--kiebase" aria-hidden="true"><span class="octicon octicon-link"></span></a>2 : KieBase</h2>
+
+<p>The scope of a KieBase is declared within a KieContainer scope and multiple KieBases can be defined in a single KieContainer scope.<br>
+A kieBase defines one or more groups of rule artefacts using packages property. This is the only way to define rule selection for a KieBase using package names because rule artifact have to define a package name they belong to.  </p>
+
+<p>A KieBase may reference one or more Kiebase as well, thus inheritating its/their rules grouping.<br>
+In order to distinguish a KieBase from another one, it is necessary to provide a unique name to a KieBase.  </p>
+
+<h2>
+<a id="3--kiesessions" class="anchor" href="#3--kiesessions" aria-hidden="true"><span class="octicon octicon-link"></span></a>3 : KieSessions</h2>
+
+<p>A KieSession is defined within the scope of a KieBase. Generally only one session is defined.<br>
+Mutiple properties may be defined within the KieSession scope such as:</p>
+
+<ul>
+<li>a name  : unique within the KieBase scope and preferably among the KieContainer scope.</li>
+<li>Session type : Stateless or Statefull</li>
+<li>...</li>
+</ul>
+
+<h2>
+<a id="4--rule-artifacts" class="anchor" href="#4--rule-artifacts" aria-hidden="true"><span class="octicon octicon-link"></span></a>4 : Rule Artifacts</h2>
+
+<p>Rule artifacts may be of many kinds :</p>
+
+<ul>
+<li>Ruleflow process file : format = xml.</li>
+<li>Decision table : format = xls, csv</li>
+<li>Technical Rule : drl.</li>
+</ul>
+
+<p>These file have always a package information. Rules are grouped logically per package information, that are used in KieBase defintions.   </p>
+
+<p>Other file may be used but are primarely used on KieWorkbench(web interface : BRMS)</p>
+
+<h2>
+<a id="steps-that-needs-to-be-performed-in-any-case" class="anchor" href="#steps-that-needs-to-be-performed-in-any-case" aria-hidden="true"><span class="octicon octicon-link"></span></a>Steps that needs to be performed in any case</h2>
+
+<h3>
+<a id="1-describing-archives-" class="anchor" href="#1-describing-archives-" aria-hidden="true"><span class="octicon octicon-link"></span></a>1. Describing archives :</h3>
+
+<p>Archives need to be described in order to know how to build versionned rule archives </p>
+
+<ul>
+<li>Description is performed by kieModule.xml file: KieContainer, KieBase, KieSession.<br>
+-- packages and rule artefacts referencing these packages<br>
+</li>
+<li>Versionning information is done with the help of pom.properties<br>
+</li>
+</ul>
+
+<h3>
+<a id="2-building-archives-" class="anchor" href="#2-building-archives-" aria-hidden="true"><span class="octicon octicon-link"></span></a>2. Building archives :</h3>
+
+<p>Rule archives are usually built with maven, but they can also be built using Java Drools API.
+The result is a JAR file containing a kiemdule.xml</p>
+
+<h3>
+<a id="3-deploying-archives-" class="anchor" href="#3-deploying-archives-" aria-hidden="true"><span class="octicon octicon-link"></span></a>3. Deploying archives :</h3>
+
+<p>Rule archives must be in the classpath so that they can be found. 
+When rules are deployed with the help of Maven on a local Maven repository, they can be used and found, by underlying maven framework layer used by Drools.</p>
+
+<h3>
+<a id="4-using-archives--running-rules" class="anchor" href="#4-using-archives--running-rules" aria-hidden="true"><span class="octicon octicon-link"></span></a>4. Using archives : running rules</h3>
+
+<p>At startup time, Drools looks up for JAR files containing a kiemodule.xml file, parses them.
+Versionned Rule archives must be available to Runtime platform so that rule engine may use them.
+A special mechanism may be used with the help of Maven driven by drools to enable hot deployment: </p>
+
+<ul>
+<li>Whenever a new archive is deployed on the local maven repository<br>
+</li>
+<li>maven-metadata-local.xml is updated with new deployed version<br>
+** A kieScanner is used to monitor modifications of this file on a frequency based period , so that it updates the KieContainer with newly deployed version according to maven updates set properties and the period.<br>
+** Its is possible to use a JMX console to update any instantiated KieContainer, with the latest Rule Archive deployed with maven. But this action needs to be performed on every KieContainer...</li>
+</ul>
+
+<h1>
+<a id="solution" class="anchor" href="#solution" aria-hidden="true"><span class="octicon octicon-link"></span></a>Solution</h1>
+
+<p>Drools customization needs to be performed :   </p>
+
+<ul>
+<li>Building : In order to build archives, a different mechanism has to be used so that maven is not in the way</li>
+<li>Building will not be performed using maven plugins, but with Java code.</li>
+<li>Drools Java API will provide this buidling, but kiemodule.xml and pom.properties have to be generated.</li>
+<li>Rules have to be discovered where they are hosted(GIT).</li>
+<li>Rule Archives will be stored on DB instead of local maven repo.</li>
+<li>JMX will be used to perform any updates : security based actions, on demand.</li>
+<li>JMX will allow to read DB and update in memory Rule archive repository</li>
+<li>JMX will allow to udpate KieContainer(s) with new Rule archives</li>
+<li>Rule services will need to register themselves to JMX service manager so that they can be updated when needed.</li>
+</ul>
+
+<h2>
+<a id="property-based-description-of-kiecontainer--a-module" class="anchor" href="#property-based-description-of-kiecontainer--a-module" aria-hidden="true"><span class="octicon octicon-link"></span></a>Property based description of KieContainer : a Module.</h2>
+
+<p>In order to describe rule projects, a property file based will provide a simple way to perform this task :<br>
+modules.properties<br>
+A special parsing is done to allow comma separated values properties and dynamic naming.</p>
+
+<p>This file describes all modules that are to be built, their GAV information, and their bases and sessions.</p>
+
+<p>Following is a sample of a modules.properties file,  describing a single module with a single base and a single session.</p>
+
+<div class="highlight highlight-source-ini"><pre><span class="pl-c"># list of modules to generate</span>
+<span class="pl-k">all.modules</span> = module1
+
+<span class="pl-c"># module generated jar version</span>
+<span class="pl-k">module1.versionid</span>=1.0.0-SNAPSHOT
+<span class="pl-k">module1.groupid</span>=com.acme.drools.tools
+<span class="pl-k">module1.artefactid</span>=dealviewtimeline
+
+<span class="pl-c"># module1 description</span>
+<span class="pl-k">module1.bases</span>=hello_base 
+<span class="pl-k">module1.hello_base.packages</span>=hello_rules 
+<span class="pl-k">module1.hello_base.session</span>=hello_session 
+<span class="pl-k">module1.hello_base.hello_session.type</span>=Stateless 
+</pre></div>
+
+<p>Java class : ModulePropertyLoader allows to parse this propety file in order to generate a composition of modules , bases and sessions.</p>
+
+<p>The result of modules correctly parsed are available as well as errors during parsing process.</p>
+
+<h2>
+<a id="git-artefact-loading-" class="anchor" href="#git-artefact-loading-" aria-hidden="true"><span class="octicon octicon-link"></span></a>Git artefact loading :</h2>
+
+<p>Now that modules are described , it is possible to get Rules artefact files from SCM : i.e. GIT<br>
+For that purpose, a GitRuleLoader Java class has been done for that purpose.</p>
+
+<p>This class is able to retreive a remote repository GIT file structure as a Bare repository, make a local repository copy and extract rules associated with package, obtained through navigation withing module.base hierarchy.</p>
+
+<h2>
+<a id="archive-building-" class="anchor" href="#archive-building-" aria-hidden="true"><span class="octicon octicon-link"></span></a>Archive building :</h2>
+
+<p>As rule artefacts are available, it is time to build rule archive.<br>
+One requirement is to have runtime model classes used in rule available so that rule compiling is possible.</p>
+
+<p>MduleBuilder java class is ment for that purpose and allows to generate all required files : kieModule.xml, pom properties, and java artefacts in a JAR file, into a specific folder.</p>
+
+<h2>
+<a id="archive-deployment-" class="anchor" href="#archive-deployment-" aria-hidden="true"><span class="octicon octicon-link"></span></a>Archive deployment :</h2>
+
+<p>Deployment is achieved through a set of java classes, allowing persistance using a persistence service, a DAO pattern and a persistence model.</p>
+
+<h2>
+<a id="runtime-rule-availability-" class="anchor" href="#runtime-rule-availability-" aria-hidden="true"><span class="octicon octicon-link"></span></a>Runtime rule availability :</h2>
+
+<p>Application has the responsability to load rules, that is to say instaciate KieContainer with proper GAV information.<br>
+ Later on it can use those KieContainer and create named KieSessions.
+ Although KieBase could be used it is not necessary to instantiate Object from this class.</p>
+
+<p>In order to load rules, a JMX Component is used and registered for the application VM : JmxModuleManager
+ Through this MXBean, the application can retreive JARed modules and load them in Drools repository so that KieContainer.
+ Upon request, the JmxModuleManager will download from database, all new JARed module newly deployed.</p>
+
+<p>A rule service using a KieContainer has to register itself to another MXBean with JMX : ServiceManager<br>
+ This class upon request through JMX will get all loaded modules and update all registered RuleServices KieContext with latest JARed module related to this servcice.</p>
+
+<p>To Sum up : 
+ To update an application with new Rules : </p>
+
+<ul>
+<li>deploy a new Archive to DB</li>
+<li>Through JMX, reload all DB persisted modules.</li>
+<li>
+<p>Through JMX, update all Ruleservices.</p>
+
+<p>All thoses steps can be done via API, or even Oracle JConsole as JMX management tool.</p>
+</li>
+</ul>
+
+<h1>
+<a id="implementation" class="anchor" href="#implementation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Implementation</h1>
+
+<p>Overall there is 4 projects:</p>
+
+<ul>
+<li>One model Project : ModuleModel</li>
+<li>One rule archive building project : ModuleArchiver</li>
+<li>One Maven plugin building project  : ModuleArchiverMavenPlugin</li>
+<li>One Runtime project : ModuleRuntime</li>
+</ul>
+
+<h2>
+<a id="modulemodel" class="anchor" href="#modulemodel" aria-hidden="true"><span class="octicon octicon-link"></span></a>ModuleModel</h2>
+
+<p>This project holds the model used almmost in every project.</p>
+
+<h2>
+<a id="modulearchiver" class="anchor" href="#modulearchiver" aria-hidden="true"><span class="octicon octicon-link"></span></a>ModuleArchiver</h2>
+
+<p>This project is responsible for </p>
+
+<ul>
+<li>Parsing a property file with module, bases, packages and session descriptions</li>
+<li>Cloning remotes GIT respositories, and fecthing on cloned repository rulefiles</li>
+<li>Compiling rules modules and generating rule archives</li>
+</ul>
+
+<h2>
+<a id="modulearchivermavenplugin" class="anchor" href="#modulearchivermavenplugin" aria-hidden="true"><span class="octicon octicon-link"></span></a>ModuleArchiverMavenPlugin</h2>
+
+<p>This project is responsible for regrouping ModuleArchiver project under a unique humbrella in order to automate with Maven the building of Rule Archives</p>
+
+<h2>
+<a id="moduleruntime" class="anchor" href="#moduleruntime" aria-hidden="true"><span class="octicon octicon-link"></span></a>ModuleRuntime</h2>
+
+<p>This project is responsible for defining the use of rule archives :
+How to store on DB a rule Archive
+How to retreive a rule archive
+How to deploy a rule archive</p>
+
+<p>As well it offer services to eanble the use of Rule archives at runtime for any ruleservice that would be implemented though the use of JMX, in order to protect deployement(hot deployement) and decorelate deployement from building.</p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/fr9ncisco/rule-persist">Rule-persist</a> is maintained by <a href="https://github.com/fr9ncisco">fr9ncisco</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
