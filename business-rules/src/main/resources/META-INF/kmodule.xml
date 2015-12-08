@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kmodule xmlns="http://jboss.org/kie/6.0.0/kmodule">
+    <kbase name="my_hello_rules" default="true" packages="hello_rules" >
+        <ksession name="hello_session" type="stateless" default="true"/>
+    </kbase>
+</kmodule>
