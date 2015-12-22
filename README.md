@@ -137,7 +137,7 @@ all.modules = module1
 # module generated jar version
 module1.versionid=1.0.0-SNAPSHOT
 module1.groupid=com.acme.drools.tools
-module1.artefactid=dealviewtimeline
+module1.artefactid=myartefact
 
 # module1 description
 module1.bases=hello_base 
@@ -225,7 +225,7 @@ Lasty, running rule tests must be performed after this generated rule archive ha
 				<artifactId>persist-rules-maven-plugin</artifactId>
 				<version>1.0.0</version>
 				<configuration>
-					<remoteUrl>https://sgithub.fr.world.socgen/fgadrat010515/rule-persist</remoteUrl>
+					<remoteUrl>https://github.com/fr9ncisco/rule-persist</remoteUrl>
 					<targetDirectory>${project.build.directory}</targetDirectory>
 					<propertyFile>${basedir}/modules.properties</propertyFile>
 				</configuration>
@@ -236,7 +236,7 @@ Lasty, running rule tests must be performed after this generated rule archive ha
 
 
 Properties : 
-- ``` <remoteUrl>[SGIT repository projects where rules are located]</remoteUrl> ```
+- ``` <remoteUrl>[GIT repository projects where rules are located]</remoteUrl> ```
 - ``` <targetDirectory>[Directory where built rule archive will be generated]</targetDirectory> ```
 - ``` <propertyFile>[local build folder path to look for modules description property file]/modules.properties</propertyFile> ```
 
@@ -249,7 +249,7 @@ How to store on DB a rule Archive
 How to retreive a rule archive
 How to deploy a rule archive
 
-As well it offer services to enable the use of Rule archives at runtime for any ruleservice that would be implemented though the use of JMX, in order to protect deployement(hot deployement) and decorelate deployement from building.
+As well it offer services to enable the use of Rule archives at runtime for any ruleservice that would be implemented though the use of JMX, in order to protect deployment(hot deployement) and decorelate deployment from building.
 
  
  
