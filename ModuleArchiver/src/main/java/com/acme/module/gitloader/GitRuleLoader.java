@@ -33,7 +33,7 @@ import com.acme.module.model.RuleArtefactType;
  */
 public class GitRuleLoader {
 	
-	static Logger logger = LoggerFactory.getLogger(GitRuleLoader.class);
+	private static Logger logger = LoggerFactory.getLogger(GitRuleLoader.class);
 	
 	private final String localRepositoryDirectory, remoteRepositoryUri;
 
@@ -52,7 +52,7 @@ public class GitRuleLoader {
 
 	/**
 	 * Returns the name space for files that should be rules<br>
-	 * The namespace or packagename, must start with "rules." <br> 
+	 * The namespace or package name, must start with "rules." <br>
 	 * @param fullPathName
 	 * @param fileName
 	 * @return
@@ -199,7 +199,7 @@ public class GitRuleLoader {
 	 * This methods walks the local repository() to look up for drools artefacts<br>
 	 * A package name must be provided to search in the repository for a specific package<br>
 	 *   
-	 * @param lookUpRootDirectories
+	 * @param packageName
 	 * @return The list of artefacts that was found in that package/namespace
 	 */
 	public List<RuleArtefact> fetchRulesArtefactsFromClonedRepository(String packageName){

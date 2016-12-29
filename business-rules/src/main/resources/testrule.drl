@@ -1,0 +1,10 @@
+package rules.mytest;
+
+import com.acme.model.Messager;
+
+rule "testaaaaaaa"
+when
+ msg:Messager();
+then
+ System.out.println(msg.getMessage());
+end

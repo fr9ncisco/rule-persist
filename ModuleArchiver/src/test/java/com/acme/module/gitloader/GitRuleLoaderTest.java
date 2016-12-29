@@ -14,18 +14,21 @@ public class GitRuleLoaderTest {
 	public static final String OK_REMOTE_REPO = "https://github.com/fr9ncisco/rule-persist/";
 	public static final String NOT_OK_REMOTE_REPO = "https://magithub.com/fr9ncisco/rule-persist/";
 
-	public static final String OK_LOCAL_REPO = "D:\\temp\\testrepo";
-	public static final String NOT_OK_LOCAL_REPO = "U:\\temp\\testrepo";
-	
-	public final String PACKAGE_1 = "rules.mytest";
+    public final String PACKAGE_1 = "rules.mytest";
 	public final String PACKAGE_2 = "rules.mytest.subpack";
-	
-	
+
+
+    public final String LOGIN ="fr9ncisco";
+	public final String PASSWORD ="Alpha!g45B";
+
+    public static final String OK_LOCAL_REPO = "/Users/Francois/Desktop/temp";
+    public static final String NOT_OK_LOCAL_REPO = "/Users/titi/Desktop/temp";
+
 	@Test
 	public void checkTwoPackageRuleLoadingTest() {
 		GitRuleLoader grl = new GitRuleLoader(OK_LOCAL_REPO, OK_REMOTE_REPO);
 		try {
-			grl.cloneRemoteRepositoryOnLocal(null, null);
+			grl.cloneRemoteRepositoryOnLocal(LOGIN, PASSWORD);
 		} catch (Exception e) {
 			System.out.println(e.getCause());
 			System.out.println(e.getMessage());
@@ -49,7 +52,7 @@ public class GitRuleLoaderTest {
 	public void checkNokLocalRepositoryTest() {
 		GitRuleLoader grl = new GitRuleLoader(NOT_OK_LOCAL_REPO, OK_REMOTE_REPO);
 		try{
-			grl.cloneRemoteRepositoryOnLocal("", "");
+			grl.cloneRemoteRepositoryOnLocal(LOGIN, PASSWORD);
 		}catch(Exception e){
 			assertTrue(e.getMessage().equals(new String("unnable to clone<"+OK_REMOTE_REPO+"> in <"+NOT_OK_LOCAL_REPO+">; nested exception is Creating directories for "+NOT_OK_LOCAL_REPO+" failed")) );
 		}
@@ -60,7 +63,7 @@ public class GitRuleLoaderTest {
 	public void checkNokRemoteRepositoryTest() {
 		GitRuleLoader grl = new GitRuleLoader(OK_LOCAL_REPO, NOT_OK_REMOTE_REPO);
 		try{
-			grl.cloneRemoteRepositoryOnLocal("","");
+			grl.cloneRemoteRepositoryOnLocal(LOGIN,PASSWORD);
 		}catch (Exception e) {
 			assertTrue(e.getMessage().equals("unnable to clone<"+NOT_OK_REMOTE_REPO+"> in <"+OK_LOCAL_REPO+">; nested exception is "+NOT_OK_REMOTE_REPO+": cannot open git-upload-pack"));		
 		}

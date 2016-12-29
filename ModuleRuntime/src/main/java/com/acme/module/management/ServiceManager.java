@@ -33,7 +33,7 @@ public class ServiceManager implements ServiceManagerMXBean{
 	private static final List<RuleService> registeredServices = new ArrayList<RuleService>();
 	static Logger logger = LoggerFactory.getLogger(ServiceManager.class);
 	
-	public static ServiceManager getInstance(){
+	public static final ServiceManager getInstance(){
 		return instance;
 	}
 	

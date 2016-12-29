@@ -76,7 +76,7 @@ Rule artifacts may be of many kinds :
 - Decision table : format = xls, csv
 - Technical Rule : drl.
 
-These file have always a package information. Rules are grouped logically per package information, that are used in KieBase defintions.   
+These file have always a package information. Rules are grouped logically per package information, that are used in KieBase definitions.   
 
 Other file may be used but are primarely used on KieWorkbench(web interface : BRMS)
 
@@ -249,7 +249,7 @@ How to store on DB a rule Archive
 How to retreive a rule archive
 How to deploy a rule archive
 
-As well it offer services to enable the use of Rule archives at runtime for any ruleservice that would be implemented though the use of JMX, in order to protect deployment(hot deployement) and decorelate deployment from building.
+As well it offers services to enable the use of Rule archives at runtime for any ruleservice that would be implemented though the use of JMX, in order to protect deployment(hot deployement) and decorelates deployment from building.
 
  
  
