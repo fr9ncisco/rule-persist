@@ -18,7 +18,7 @@ import com.acme.module.jmx.ModuleManagerMXBean;
  * This set is updated when :<br>
  * - method <b>loadModulesFromDb</b> is invoked(it loads all PersistedModule from an underlying database)<br>
  * - new PersistedModule instances are added to the set, since last call to <b>loadModulesFromDb</b><br>. 
- * when it looks 
+ * when it looks in db for persisted modules
  *
  */
 public class ModuleManager implements ModuleManagerMXBean {
