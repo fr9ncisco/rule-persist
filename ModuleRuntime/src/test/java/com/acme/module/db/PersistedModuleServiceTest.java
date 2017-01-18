@@ -6,6 +6,7 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.util.List;
 
+import com.acme.module.db.model.PersistedModuleId;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,9 +24,9 @@ public class PersistedModuleServiceTest {
 	public static final String MODULE2_GROUPID="com.acme.tools.rules";
 	public static final String MODULE2_ARTEFACTID="hello";
 	public static final String MODULE2_VERSIONID="1.0.1-SNAPSHOOT";
-	
-	public static final String VALID_ARCHIVE_FILE="C:/Users/blabla/testxcel/target/hello-1.0.2-SNAPSHOT.jar";
-	public static final String INVALID_ARCHIVE_FILE="dede.jar";
+
+	public static final String VALID_ARCHIVE_FILE = "/Users/Francois/Desktop/dev/rule-persist/ModuleArchiver/target/generated-1.0.0-SNAPSHOOT.jar";
+	public static final String INVALID_ARCHIVE_FILE = "dede.jar";
 
 	PersistedModuleService pms;
 	
@@ -42,6 +43,7 @@ public class PersistedModuleServiceTest {
 
 	@Test
 	public void testPersistRuleArchive() {
+		pms.deleteAll();
 
 		Module module = new Module(MODULE1_GROUPID,MODULE1_ARTEFACTID,MODULE1_VERSIONID);
 
@@ -69,12 +71,13 @@ public class PersistedModuleServiceTest {
 		// valid module and valid file will not generate an exception
 		try {
 			pms.persistRuleArchive(module, new File(VALID_ARCHIVE_FILE));
-			//pms.delete(module);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail("No exception is expected here : "+e.getMessage());
+		} finally {
+			pms.delete(module);
 		}
-		
 	}
 
 	@Test
@@ -109,10 +112,9 @@ public class PersistedModuleServiceTest {
 	@Test
 	public void testPersist() {
 		
-		Module module = new Module(MODULE1_GROUPID,MODULE1_ARTEFACTID,MODULE1_VERSIONID);
-
 		PersistedModule pm = null;
-		
+		Module module = new Module(MODULE1_GROUPID, MODULE1_ARTEFACTID, MODULE1_VERSIONID);
+
 		// valid module description will be persisted as PersistedModule with content set
 		try {
 			pm = new PersistedModule(MODULE1_GROUPID, MODULE1_ARTEFACTID, MODULE1_VERSIONID);
@@ -123,8 +125,10 @@ public class PersistedModuleServiceTest {
 			fail("No exception is expected here : "+e.getMessage());
 		}
 		finally{
-			pms.findById(module);
-			PersistedModule pm2 =pms.findById(module);
+			//pms.findById(module);
+			PersistedModule pm2;
+			pm2 = pms.findById(module);
+
 			assertTrue(pm2.equals(pm));
 			assertTrue(pm2.getPersistedModuleId().equals(pm.getPersistedModuleId()));
 			pms.delete(module);
@@ -161,10 +165,11 @@ public class PersistedModuleServiceTest {
 		} catch (Exception e) {
 			assertTrue(e.getClass().equals(org.hibernate.exception.ConstraintViolationException.class));
 		}
-		
-		// valid module description will be persisted as PersistedModule with content not set
+
+		// valid module description will be persisted as PersistedModule with content set
 		try {
 			pm = new PersistedModule(MODULE1_GROUPID, MODULE1_ARTEFACTID, MODULE1_VERSIONID);
+			pm.setContent(pms.readFileAsByteArray(new File(VALID_ARCHIVE_FILE)));
 			pms.persist(pm);
 			
 		} catch (Exception e) {
@@ -173,7 +178,7 @@ public class PersistedModuleServiceTest {
 		finally{
 			pms.findById(module);
 			PersistedModule pm2 = pms.findById(module);
-			assertTrue(pm2.getContent()==null);
+			assertTrue(pm2.getContent() != null);
 			assertTrue(pm2.equals(pm));
 			assertTrue(pm2.getPersistedModuleId().equals(pm.getPersistedModuleId()));
 			pms.delete(module);
@@ -192,6 +197,8 @@ public class PersistedModuleServiceTest {
 		try {
 			// persist a pm without content
 			pm = new PersistedModule(MODULE1_GROUPID, MODULE1_ARTEFACTID, MODULE1_VERSIONID);
+			pm.setContent(pms.readFileAsByteArray(new File(VALID_ARCHIVE_FILE)));
+
 			pms.persist(pm);
 			pms.findById(module);
 			byte[] content = pms.readFileAsByteArray(new File(VALID_ARCHIVE_FILE));
@@ -221,8 +228,9 @@ public class PersistedModuleServiceTest {
 
 		// find by ID a persisted module
 		try {
-			// persist a pm without content
+			// persist a pm
 			pm = new PersistedModule(MODULE1_GROUPID, MODULE1_ARTEFACTID, MODULE1_VERSIONID);
+			pm.setContent(pms.readFileAsByteArray(new File(VALID_ARCHIVE_FILE)));
 			pms.persist(pm);
 			pms.findById(module);
 			PersistedModule pm2 = pms.findById(module);
@@ -234,7 +242,6 @@ public class PersistedModuleServiceTest {
 		finally{
 			pms.delete(module);
 		}
-		
 
 		// find by ID a non persisted module will return null
 		try {
@@ -256,6 +263,7 @@ public class PersistedModuleServiceTest {
 		// delete a persisted module
 		try {
 			pm = new PersistedModule(MODULE1_GROUPID, MODULE1_ARTEFACTID, MODULE1_VERSIONID);
+			pm.setContent(pms.readFileAsByteArray(new File(VALID_ARCHIVE_FILE)));
 			pms.persist(pm);
 			pms.delete(module);
 			PersistedModule pm2 = pms.findById(module);
@@ -282,9 +290,11 @@ public class PersistedModuleServiceTest {
 		
 		try {
 			pm = new PersistedModule(MODULE1_GROUPID, MODULE1_ARTEFACTID, MODULE1_VERSIONID);
+			pm.setContent(pms.readFileAsByteArray(new File(VALID_ARCHIVE_FILE)));
 			pms.persist(pm);
 			
 			pm2 = new PersistedModule(MODULE2_GROUPID, MODULE2_ARTEFACTID, MODULE2_VERSIONID);
+			pm2.setContent(pms.readFileAsByteArray(new File(VALID_ARCHIVE_FILE)));
 			pms.persist(pm2);
 			
 			List<PersistedModule> listPModules= pms.findAll();
@@ -311,9 +321,11 @@ public class PersistedModuleServiceTest {
 		
 		try {
 			pm = new PersistedModule(MODULE1_GROUPID, MODULE1_ARTEFACTID, MODULE1_VERSIONID);
+			pm.setContent(pms.readFileAsByteArray(new File(VALID_ARCHIVE_FILE)));
 			pms.persist(pm);
 			
 			pm2 = new PersistedModule(MODULE2_GROUPID, MODULE2_ARTEFACTID, MODULE2_VERSIONID);
+			pm2.setContent(pms.readFileAsByteArray(new File(VALID_ARCHIVE_FILE)));
 			pms.persist(pm2);
 			
 			List<PersistedModule> listPModules= pms.findAll();

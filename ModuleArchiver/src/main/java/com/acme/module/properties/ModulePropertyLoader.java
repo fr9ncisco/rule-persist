@@ -32,17 +32,13 @@ public class ModulePropertyLoader {
 	private static final String PACKAGES_KEYS_SUFFIX = ".packages";
 	private static final String SESSION_KEY_SUFFIX = ".session";
 	private static final String SESSION_TYPE_SUFFIX = ".type";
-	
-	private boolean isErrorRaised = false;
-	
 	private static final char COMA =',';
-	
 	private final Properties properties;
-	private Set<Module> modules = new HashSet<Module>();
-	
 	private final List<String> errors = new ArrayList<String>();
 	private final List<String> warnings = new ArrayList<String>();
-	
+	private boolean isErrorRaised = false;
+	private Set<Module> modules = new HashSet<Module>();
+
 	/**
 	 * 
 	 * @param props
@@ -233,8 +229,8 @@ public class ModulePropertyLoader {
 		 errors.add(error);
 		 isErrorRaised = true;
 	 }
-	
-	private final String getProperty(String key){
+
+	private String getProperty(String key) {
 		String value = properties.getProperty(key);
 		if(value == null){
 			warnings.add("Property <"+key+"> does not exists in rule module property file");

@@ -49,7 +49,7 @@ public class PersistedModuleService {
 	 * Reads a file from file system as a byte Array<br>
 	 * @param file :  the file to read
 	 * @return byte[] : the content of the file as a byte array
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public byte[] readFileAsByteArray(File file) throws IOException, FileNotFoundException {
 		

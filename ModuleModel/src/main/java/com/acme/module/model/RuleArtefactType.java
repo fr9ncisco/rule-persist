@@ -9,12 +9,14 @@ public enum RuleArtefactType {
 	XLS("xls"),
 	CSV("csv"),
 	UNKNOWN("unknown");
-	
-	private final String extension;
-	private RuleArtefactType(String extension){this.extension = extension;}
-	public final String getExtension(){return this.extension;}
-	
-	public static final List<String> getSupportedRuleFileExtensions(){
+
+	final String extension;
+
+	RuleArtefactType(String extension) {
+		this.extension = extension;
+	}
+
+	public static List<String> getSupportedRuleFileExtensions() {
 		List<String> result = new ArrayList<String>();
 		for( RuleArtefactType rat:values()){
 			if(!rat.equals(UNKNOWN))
@@ -22,12 +24,16 @@ public enum RuleArtefactType {
 		}
 		return result;
 	}
-	
-	public static final RuleArtefactType getRuleArtefactTypeFromExtension(String extension){
+
+	public static RuleArtefactType getRuleArtefactTypeFromExtension(String extension) {
 		for( RuleArtefactType rat:values()){
 			if(rat.getExtension().equalsIgnoreCase(extension))
 				return rat;
 		}
 		return UNKNOWN;
+	}
+
+	public final String getExtension() {
+		return this.extension;
 	}
 }

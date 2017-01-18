@@ -13,6 +13,8 @@ import javax.persistence.Table;
 
 import com.acme.module.model.Gav;
 
+import static javax.persistence.FetchType.EAGER;
+
 /**
  * 
  * A Persisted Module holds the version of the module,<br>
@@ -29,14 +31,22 @@ import com.acme.module.model.Gav;
 public class PersistedModule implements Serializable{
 	
 	private static final long serialVersionUID = 2266250896585158884L;
-
-	public PersistedModule(){}
+	/*****************************/
+	@EmbeddedId
+	private PersistedModuleId persistedModuleId;
+	/*****************************/
+	@Lob
+	@Basic(fetch = EAGER)
+	@Column(name = "content", columnDefinition = "LOB NOT NULL")
+	private byte[] content = null;
 	
+	public PersistedModule(){}
+
 	@ConstructorProperties({"groupId", "artefactId", "versionId"})
 	public PersistedModule(String groupId, String artefactId, String versionId){
 		this.persistedModuleId = new PersistedModuleId(groupId, artefactId, versionId);
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
@@ -48,16 +58,9 @@ public class PersistedModule implements Serializable{
 		return builder.toString();
 	}
 
-	/*****************************/
-	@EmbeddedId
-	private PersistedModuleId persistedModuleId;
 	public PersistedModuleId getPersistedModuleId() {return persistedModuleId;}
-	public void setPersistedModuleId(PersistedModuleId persistedModuleId) {this.persistedModuleId = persistedModuleId;}
 
-	/*****************************/
-	@Lob @Basic(fetch=FetchType.LAZY)
-	@Column(name="content", columnDefinition="LOB NOT NULL")
-	private byte[] content = null;
+	public void setPersistedModuleId(PersistedModuleId persistedModuleId) {this.persistedModuleId = persistedModuleId;}
 	
 	public byte[] getContent() {return this.content;}
 	public void setContent(byte[] content) {this.content = content;}

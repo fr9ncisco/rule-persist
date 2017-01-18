@@ -16,7 +16,7 @@ public interface RuleService {
 	 * The primary purpose is to update KieContainer rules so that hot deployment is possible. 
 	 * @return the current container of the service
 	 */
-	public KieContainer getKieContainer();
+	KieContainer getKieContainer();
 
 	/**
 	 * Retrieve service's name, A name should be unique so that it means something <br>
@@ -25,6 +25,6 @@ public interface RuleService {
 	 *  
 	 * @return the name on the rule service
 	 */
-	public String getName();
-	
+	String getName();
+
 }

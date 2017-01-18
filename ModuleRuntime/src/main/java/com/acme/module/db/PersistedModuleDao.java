@@ -3,6 +3,7 @@ package com.acme.module.db;
 import java.util.Iterator;
 import java.util.List;
 
+import com.acme.module.db.model.PersistedModuleId;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -11,6 +12,7 @@ import org.hibernate.cfg.Configuration;
 
 import com.acme.module.db.model.PersistedModule;
 import com.acme.module.model.Module;
+import org.hibernate.metadata.ClassMetadata;
 
 /**
  * This class offers necessary methods to handle Database persistence for Modules.
@@ -47,15 +49,17 @@ public class PersistedModuleDao implements
 	 */
 	@SuppressWarnings("rawtypes")
 	public PersistedModule findById(Module module) {
-		PersistedModule pModule = null; 
-		Iterator persistedModuleIterator  = getCurrentSession().createQuery("from PersistedModule").iterate();
+		PersistedModule pModule = null;
+//		ClassMetadata metadata  = getSessionFactory().getClassMetadata(PersistedModule.class);
+		Iterator persistedModuleIterator = getCurrentSession().createQuery("from PersistedModule ").iterate();
 		while(persistedModuleIterator.hasNext()){
 			PersistedModule pm = (PersistedModule)persistedModuleIterator.next();
 			if(	pm.getPersistedModuleId().getArtefactId().equals(module.getArtefactId())
 				&&pm.getPersistedModuleId().getGroupId().equals(module.getGroupId())
 				&&pm.getPersistedModuleId().getVersionId().equals(module.getVersionId())){
-					pModule = pm;
-				}
+				pModule = pm;
+				pModule.setContent(pm.getContent());
+			}
 		}
 		return pModule;
 	}

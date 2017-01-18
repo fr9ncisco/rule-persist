@@ -8,15 +8,15 @@ public interface ModuleManagerMXBean {
 	 * Reload modules from DB
 	 */
 	 @DisplayName("Operation: loadModulesFromDb")
-	public void loadModulesFromDb();
+	 void loadModulesFromDb();
 
 	 /**
 	  * Get the list of modules of already loaded modules
 	  * @return
 	  */
-	@DisplayName("GETTER: getLoadedModules") 
-	public PersistedModule[] getLoadedModules();  
-	
+	 @DisplayName("GETTER: getLoadedModules")
+	 PersistedModule[] getLoadedModules();
+
 //	/**
 //	 * Get the associated persisted module from Module description
 //	 * @param module
@@ -29,6 +29,6 @@ public interface ModuleManagerMXBean {
 	 * 
 	 * @return
 	 */
-	@DisplayName("GETTER: getLoadedModules") 
-	public String[] getLoadedModulesAsStrings();
+	@DisplayName("GETTER: getLoadedModules")
+	String[] getLoadedModulesAsStrings();
 }
