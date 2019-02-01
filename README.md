@@ -3,7 +3,7 @@
 Drools "rules" persistence on DB as is without KieWorkbench
 
 ## Goals
-- Avoid drools maven scheme dependencies at runtime
+- Avoid drools maven scheme dependencies at runtime : rule update should not be dependant of a maven configuration but under  deployment specific action out of maven control.
 - Avoid KieWorkbench component
 - Allow hot deployement without runtime automated update
 - Use versioning information for sets of rules
@@ -14,7 +14,7 @@ Drools "rules" persistence on DB as is without KieWorkbench
 A Drools 6.xx Rule project is made of :
 - a Pom.property file, containig GAV(groupid,artefactid, versionid ) information.
 - a KieModule file :  A  description of components and their configuration that will be used at runtime.
-- Rule artefact files : rules, decision tables, rule process flows, etc...
+- Rule artefact files : rules, decision tables, rule process flows, etc... that make a semantic set of rule.
 - dependencies to java models referenced in rules(no files)
 
 Common development usage of Drools is to produce an archive containing those files so that this archive can be used at runtime to execute rules contained in it.
@@ -76,10 +76,9 @@ Rule artifacts may be of many kinds :
 - Decision table : format = xls, csv
 - Technical Rule : drl.
 
-These file have always a package information. Rules are grouped logically per package information, that are used in KieBase definitions.   
+These file have always a <b>package information</b>. Rules are grouped logically per package information, that are used in KieBase definitions.   
 
 Other file may be used but are primarely used on KieWorkbench(web interface : BRMS)
-
 
 
 
